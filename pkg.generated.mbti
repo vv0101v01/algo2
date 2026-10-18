@@ -1,0 +1,486 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "arena/affine_algebra"
+
+// Values
+pub const PRIME : Int = 7
+
+pub fn all_points(Int) -> Array[Pt]
+
+pub fn coordinates_in_basis(Array[Fp], Array[Array[Fp]]) -> Array[Fp]?
+
+pub fn delta_poly(Pt) -> Poly
+
+pub fn disjoint_injection_left(Int, Int) -> PolyMap
+
+pub fn disjoint_injection_right(Int, Int) -> PolyMap
+
+pub fn[A, B, C] distribute(Prod[A, Sum[B, C]]) -> Sum[Prod[A, B], Prod[A, C]]
+
+pub fn eval_poly_in_finalg(FinAlg, Array[FinElem], Poly) -> FinElem
+
+pub fn eval_poly_in_localized(LocalizedRing, Poly) -> LocElem
+
+pub fn extend_over_principal_localization(LocalizedRing, FinAlg, Array[FinElem], LocElem) -> FinElem?
+
+pub fn field_equations_ideal(Int) -> Ideal
+
+pub fn groebner_basis(Array[Poly]) -> Array[Poly]
+
+pub fn induced_point_map(AlgHom, Variety, Variety, CoordRing, CoordRing) -> Array[Pt]
+
+pub fn interpolate(Array[Pt], Array[Fp]) -> Poly
+
+pub fn is_variety_morphism(PolyMap, Variety, Variety) -> Bool
+
+pub fn maximal_ideal_at(Pt) -> Ideal
+
+pub fn pair_poly_maps(PolyMap, PolyMap) -> PolyMap
+
+pub fn[X, A, B] pairing((X) -> A, (X) -> B) -> (X) -> Prod[A, B]
+
+pub fn poly_list_display(Array[Poly]) -> String
+
+pub fn poly_list_equal(Array[Poly], Array[Poly]) -> Bool
+
+pub fn[A, B, C, D] prod_map(Prod[A, B], (A) -> C, (B) -> D) -> Prod[C, D]
+
+pub fn product_elem(FinAlg, FinAlg, FinElem, FinElem) -> FinElem
+
+pub fn product_pair_hom(FinAlg, FinAlg, FinAlg, FinAlg, AlgHom, AlgHom) -> AlgHom
+
+pub fn product_projection_first(Int, Int) -> PolyMap
+
+pub fn product_projection_second(Int, Int) -> PolyMap
+
+pub fn pullback_function(PolyMap, Variety, Variety, CoordRing, FinElem) -> FinElem
+
+pub fn pullback_hom(PolyMap, Variety, Variety, CoordRing, CoordRing) -> AlgHom
+
+pub fn pure_tensor(FinAlg, FinAlg, FinElem, FinElem) -> FinElem
+
+pub fn reduced_groebner(Array[Poly]) -> Array[Poly]
+
+pub fn span_basis(Array[Array[Fp]]) -> Array[Array[Fp]]
+
+pub fn spoly(Poly, Poly) -> Poly
+
+pub fn[A, B, C] sum_elim(Sum[A, B], (A) -> C, (B) -> C) -> C
+
+pub fn[A, B, C, D] sum_map(Sum[A, B], (A) -> C, (B) -> D) -> Sum[C, D]
+
+pub fn tensor_copair_hom(FinAlg, FinAlg, FinAlg, FinAlg, AlgHom, AlgHom) -> AlgHom
+
+pub fn vanishing_ideal_of_points(Int, Array[Pt]) -> Ideal
+
+pub fn var_name(Int) -> String
+
+pub fn vec_add(Array[Fp], Array[Fp]) -> Array[Fp]
+
+pub fn vec_basis(Int, Int) -> Array[Fp]
+
+pub fn vec_copy(Array[Fp]) -> Array[Fp]
+
+pub fn vec_display(Array[Fp]) -> String
+
+pub fn vec_eq(Array[Fp], Array[Fp]) -> Bool
+
+pub fn vec_in_span(Array[Fp], Array[Array[Fp]]) -> Bool
+
+pub fn vec_is_zero(Array[Fp]) -> Bool
+
+pub fn vec_scale(Fp, Array[Fp]) -> Array[Fp]
+
+pub fn vec_sub(Array[Fp], Array[Fp]) -> Array[Fp]
+
+pub fn vec_zero(Int) -> Array[Fp]
+
+// Errors
+
+// Types and methods
+pub struct AlgHom {
+  mat : Matrix
+}
+pub fn AlgHom::apply(Self, FinAlg, FinElem) -> FinElem
+pub fn AlgHom::compose(Self, Self) -> Self
+pub fn AlgHom::from_basis_images(Array[FinElem]) -> Self
+pub fn AlgHom::from_matrix(Matrix) -> Self
+pub fn AlgHom::identity(Int) -> Self
+pub fn AlgHom::is_isomorphism(Self, FinAlg, FinAlg) -> Bool
+pub fn AlgHom::matrix(Self) -> Matrix
+pub fn AlgHom::verify(Self, FinAlg, FinAlg) -> Bool
+
+pub struct CoordRing {
+  pts : Array[Pt]
+  nvars : Int
+  alg : FinAlg
+}
+pub fn CoordRing::algebra(Self) -> FinAlg
+pub fn CoordRing::coordinate_function(Self, Int) -> FinElem
+pub fn CoordRing::num_points(Self) -> Int
+pub fn CoordRing::of_poly(Self, Poly) -> FinElem
+pub fn CoordRing::poly_of_function(Self, FinElem) -> Poly
+
+pub struct Coset {
+  repr : Poly
+  tag : Int
+}
+pub fn Coset::display(Self) -> String
+pub fn Coset::equal_to(Self, Self) -> Bool
+pub fn Coset::is_zero(Self) -> Bool
+pub fn Coset::repr_poly(Self) -> Poly
+
+pub struct FinAlg {
+  name : String
+  dim : Int
+  mult : Array[Fp]
+  one_vec : Array[Fp]
+  tag : Int
+}
+pub fn FinAlg::add(Self, FinElem, FinElem) -> FinElem
+pub fn FinAlg::basis_elem(Self, Int) -> FinElem
+pub fn FinAlg::check_axioms(Self) -> Bool
+pub fn FinAlg::dim(Self) -> Int
+pub fn FinAlg::elem(Self, Array[Fp]) -> FinElem
+pub fn FinAlg::from_structure(String, Int, Array[Fp], Array[Fp]) -> Self
+pub fn FinAlg::function_algebra(String, Int) -> Self
+pub fn FinAlg::ground_field() -> Self
+pub fn FinAlg::ideal_basis_of(Self, Array[FinElem]) -> Array[Array[Fp]]
+pub fn FinAlg::is_ideal_subspace(Self, Array[Array[Fp]]) -> Bool
+pub fn FinAlg::is_unit(Self, FinElem) -> Bool
+pub fn FinAlg::localize_at(Self, FinElem, String) -> FinQuotient
+pub fn FinAlg::mul(Self, FinElem, FinElem) -> FinElem
+pub fn FinAlg::mult_matrix(Self, FinElem) -> Matrix
+pub fn FinAlg::name(Self) -> String
+pub fn FinAlg::one_elem(Self) -> FinElem
+pub fn FinAlg::pow(Self, FinElem, Int) -> FinElem
+pub fn FinAlg::principal_ideal_basis(Self, FinElem) -> Array[Array[Fp]]
+pub fn FinAlg::product(Self, Self, String) -> Self
+pub fn FinAlg::quotient_by_subspace(Self, Array[Array[Fp]], String) -> FinQuotient
+pub fn FinAlg::random_elem(Self, Rng) -> FinElem
+pub fn FinAlg::scalar_elem(Self, Fp) -> FinElem
+pub fn FinAlg::scale(Self, Fp, FinElem) -> FinElem
+pub fn FinAlg::sub(Self, FinElem, FinElem) -> FinElem
+pub fn FinAlg::tensor(Self, Self, String) -> Self
+pub fn FinAlg::try_inv(Self, FinElem) -> FinElem?
+pub fn FinAlg::zero_elem(Self) -> FinElem
+
+pub struct FinElem {
+  coords : Array[Fp]
+  tag : Int
+}
+pub fn FinElem::coords(Self) -> Array[Fp]
+pub fn FinElem::display(Self) -> String
+pub fn FinElem::equal_to(Self, Self) -> Bool
+
+pub struct FinQuotient {
+  quotient : FinAlg
+  cob_inv : Matrix
+  ideal_dim : Int
+  source_tag : Int
+}
+pub fn FinQuotient::algebra(Self) -> FinAlg
+pub fn FinQuotient::as_hom(Self, FinAlg) -> AlgHom
+pub fn FinQuotient::project(Self, FinElem) -> FinElem
+
+pub struct Fp {
+  v : Int
+} derive(Eq)
+pub fn Fp::add(Self, Self) -> Self
+pub fn Fp::display(Self) -> String
+pub fn Fp::div_(Self, Self) -> Self
+pub fn Fp::equal(Self, Self) -> Bool
+pub fn Fp::inv(Self) -> Self
+pub fn Fp::is_zero(Self) -> Bool
+pub fn Fp::mul(Self, Self) -> Self
+pub fn Fp::neg(Self) -> Self
+pub fn Fp::new(Int) -> Self
+pub fn Fp::not_equal(Self, Self) -> Bool
+pub fn Fp::one() -> Self
+pub fn Fp::pow(Self, Int) -> Self
+pub fn Fp::sub(Self, Self) -> Self
+pub fn Fp::to_int(Self) -> Int
+pub fn Fp::try_inv(Self) -> Self?
+pub fn Fp::zero() -> Self
+pub impl Add for Fp
+pub impl Mul for Fp
+pub impl Neg for Fp
+pub impl Sub for Fp
+
+pub struct Ideal {
+  nvars : Int
+  generators : Array[Poly]
+  gb : Array[Poly]
+}
+pub fn Ideal::contains(Self, Poly) -> Bool
+pub fn Ideal::equal_to(Self, Self) -> Bool
+pub fn Ideal::finite_dimension(Self) -> Int?
+pub fn Ideal::gens(Self) -> Array[Poly]
+pub fn Ideal::groebner(Self) -> Array[Poly]
+pub fn Ideal::in_radical(Self, Poly) -> Bool
+pub fn Ideal::intersect(Self, Self) -> Self
+pub fn Ideal::is_unit_ideal(Self) -> Bool
+pub fn Ideal::is_zero_ideal(Self) -> Bool
+pub fn Ideal::krull_dimension(Self) -> Int
+pub fn Ideal::new(Int, Array[Poly]) -> Self
+pub fn Ideal::normal_form(Self, Poly) -> Poly
+pub fn Ideal::num_vars(Self) -> Int
+pub fn Ideal::product(Self, Self) -> Self
+pub fn Ideal::saturate(Self, Poly) -> Self
+pub fn Ideal::standard_monomials(Self) -> Array[Mono]?
+pub fn Ideal::sum(Self, Self) -> Self
+pub fn Ideal::unit_ideal(Int) -> Self
+pub fn Ideal::zero_ideal(Int) -> Self
+
+pub struct LocElem {
+  num : Poly
+  power : Int
+}
+pub fn LocElem::display(Self, Poly) -> String
+
+pub struct LocalFrac {
+  num : Poly
+  den : Poly
+}
+
+pub struct LocalRingAtPoint {
+  pt : Pt
+  nvars : Int
+}
+pub fn LocalRingAtPoint::add(Self, LocalFrac, LocalFrac) -> LocalFrac
+pub fn LocalRingAtPoint::equal_to(Self, LocalFrac, LocalFrac) -> Bool
+pub fn LocalRingAtPoint::frac(Self, Poly, Poly) -> LocalFrac?
+pub fn LocalRingAtPoint::in_maximal_ideal(Self, LocalFrac) -> Bool
+pub fn LocalRingAtPoint::is_unit(Self, LocalFrac) -> Bool
+pub fn LocalRingAtPoint::mul(Self, LocalFrac, LocalFrac) -> LocalFrac
+pub fn LocalRingAtPoint::neg(Self, LocalFrac) -> LocalFrac
+pub fn LocalRingAtPoint::new(Pt) -> Self
+pub fn LocalRingAtPoint::of_poly(Self, Poly) -> LocalFrac
+pub fn LocalRingAtPoint::residue(Self, LocalFrac) -> Fp
+pub fn LocalRingAtPoint::sub(Self, LocalFrac, LocalFrac) -> LocalFrac
+pub fn LocalRingAtPoint::try_inv(Self, LocalFrac) -> LocalFrac?
+
+pub struct LocalizedRing {
+  ring : QuotientRing
+  denom : Poly
+  saturation : Ideal
+}
+pub fn LocalizedRing::add(Self, LocElem, LocElem) -> LocElem
+pub fn LocalizedRing::equal_to(Self, LocElem, LocElem) -> Bool
+pub fn LocalizedRing::frac(Self, Poly, Int) -> LocElem
+pub fn LocalizedRing::inv_denom(Self) -> LocElem
+pub fn LocalizedRing::is_zero(Self, LocElem) -> Bool
+pub fn LocalizedRing::is_zero_ring(Self) -> Bool
+pub fn LocalizedRing::mul(Self, LocElem, LocElem) -> LocElem
+pub fn LocalizedRing::neg(Self, LocElem) -> LocElem
+pub fn LocalizedRing::new(QuotientRing, Poly) -> Self
+pub fn LocalizedRing::of_coset(Self, Coset) -> LocElem
+pub fn LocalizedRing::of_poly(Self, Poly) -> LocElem
+pub fn LocalizedRing::of_polynomial_ring(Poly) -> Self
+pub fn LocalizedRing::one_elem(Self) -> LocElem
+pub fn LocalizedRing::pow(Self, LocElem, Int) -> LocElem
+pub fn LocalizedRing::saturation_ideal(Self) -> Ideal
+pub fn LocalizedRing::sub(Self, LocElem, LocElem) -> LocElem
+pub fn LocalizedRing::zero_elem(Self) -> LocElem
+
+pub struct Matrix {
+  rows : Int
+  cols : Int
+  data : Array[Array[Fp]]
+}
+pub fn Matrix::display(Self) -> String
+pub fn Matrix::equal_to(Self, Self) -> Bool
+pub fn Matrix::from_rows(Array[Array[Fp]]) -> Self
+pub fn Matrix::get(Self, Int, Int) -> Fp
+pub fn Matrix::identity(Int) -> Self
+pub fn Matrix::inverse(Self) -> Self?
+pub fn Matrix::mul(Self, Self) -> Self
+pub fn Matrix::mul_vec(Self, Array[Fp]) -> Array[Fp]
+pub fn Matrix::nullspace(Self) -> Array[Array[Fp]]
+pub fn Matrix::num_cols(Self) -> Int
+pub fn Matrix::num_rows(Self) -> Int
+pub fn Matrix::rank(Self) -> Int
+pub fn Matrix::row(Self, Int) -> Array[Fp]
+pub fn Matrix::rref(Self) -> (Self, Array[Int])
+pub fn Matrix::solve(Self, Array[Fp]) -> Array[Fp]?
+pub fn Matrix::transpose(Self) -> Self
+pub fn Matrix::zero(Int, Int) -> Self
+
+pub struct Mono {
+  exps : Array[Int]
+}
+pub fn Mono::compare(Self, Self) -> Int
+pub fn Mono::copy(Self) -> Self
+pub fn Mono::display(Self) -> String
+pub fn Mono::divides(Self, Self) -> Bool
+pub fn Mono::equal_to(Self, Self) -> Bool
+pub fn Mono::exp_at(Self, Int) -> Int
+pub fn Mono::from_array(Array[Int]) -> Self
+pub fn Mono::is_one(Self) -> Bool
+pub fn Mono::lcm(Self, Self) -> Self
+pub fn Mono::mul(Self, Self) -> Self
+pub fn Mono::num_vars(Self) -> Int
+pub fn Mono::one(Int) -> Self
+pub fn Mono::quotient(Self, Self) -> Self
+pub fn Mono::total_degree(Self) -> Int
+pub fn Mono::variable(Int, Int) -> Self
+
+pub struct Poly {
+  nvars : Int
+  terms : Array[Term]
+}
+pub fn Poly::add(Self, Self) -> Self
+pub fn Poly::coeff_at(Self, Int) -> Fp
+pub fn Poly::coeff_of(Self, Mono) -> Fp
+pub fn Poly::compose(Self, Array[Self]) -> Self
+pub fn Poly::constant(Int, Fp) -> Self
+pub fn Poly::display(Self) -> String
+pub fn Poly::equal_to(Self, Self) -> Bool
+pub fn Poly::eval(Self, Array[Fp]) -> Fp
+pub fn Poly::from_int_terms(Int, Array[(Int, Array[Int])]) -> Self
+pub fn Poly::from_terms(Int, Array[Term]) -> Self
+pub fn Poly::is_zero(Self) -> Bool
+pub fn Poly::lead_coeff(Self) -> Fp
+pub fn Poly::lead_mono(Self) -> Mono
+pub fn Poly::lead_term(Self) -> Term
+pub fn Poly::mono_at(Self, Int) -> Mono
+pub fn Poly::monomial(Int, Fp, Array[Int]) -> Self
+pub fn Poly::mul(Self, Self) -> Self
+pub fn Poly::negate(Self) -> Self
+pub fn Poly::num_terms(Self) -> Int
+pub fn Poly::num_vars(Self) -> Int
+pub fn Poly::one_poly(Int) -> Self
+pub fn Poly::pow(Self, Int) -> Self
+pub fn Poly::pseudo_random(Rng, Int, Int, Int) -> Self
+pub fn Poly::reduce_by(Self, Array[Self]) -> Self
+pub fn Poly::relabel(Self, Array[Int], Int) -> Self
+pub fn Poly::scale(Self, Fp) -> Self
+pub fn Poly::sub(Self, Self) -> Self
+pub fn Poly::variable(Int, Int) -> Self
+pub fn Poly::zero(Int) -> Self
+pub impl Add for Poly
+pub impl Mul for Poly
+pub impl Sub for Poly
+
+pub struct PolyMap {
+  dom_vars : Int
+  components : Array[Poly]
+}
+pub fn PolyMap::apply_point(Self, Pt) -> Pt
+pub fn PolyMap::codim(Self) -> Int
+pub fn PolyMap::compose_after(Self, Self) -> Self
+pub fn PolyMap::identity(Int) -> Self
+pub fn PolyMap::new(Int, Array[Poly]) -> Self
+pub fn PolyMap::pullback_poly(Self, Poly) -> Poly
+
+pub struct Prod[A, B] {
+  fst : A
+  snd : B
+}
+pub fn[A, B] Prod::new(A, B) -> Self[A, B]
+
+pub struct Pt {
+  coords : Array[Fp]
+}
+pub fn Pt::compare(Self, Self) -> Int
+pub fn Pt::coord(Self, Int) -> Fp
+pub fn Pt::coords_array(Self) -> Array[Fp]
+pub fn Pt::dim(Self) -> Int
+pub fn Pt::display(Self) -> String
+pub fn Pt::equal_to(Self, Self) -> Bool
+pub fn Pt::new(Array[Fp]) -> Self
+
+pub struct QuotientModel {
+  ring : QuotientRing
+  alg : FinAlg
+  basis : Array[Mono]
+}
+pub fn QuotientModel::algebra(Self) -> FinAlg
+pub fn QuotientModel::basis_monomials(Self) -> Array[Mono]
+pub fn QuotientModel::new(QuotientRing, String) -> Self?
+pub fn QuotientModel::ring(Self) -> QuotientRing
+pub fn QuotientModel::to_coset(Self, FinElem) -> Coset
+pub fn QuotientModel::to_elem(Self, Coset) -> FinElem
+
+pub struct QuotientRing {
+  ideal : Ideal
+  tag : Int
+}
+pub fn QuotientRing::add(Self, Coset, Coset) -> Coset
+pub fn QuotientRing::evaluate(Self, Poly, Array[Coset]) -> Coset
+pub fn QuotientRing::finite_dimension(Self) -> Int?
+pub fn QuotientRing::from_generators(Int, Array[Poly]) -> Self
+pub fn QuotientRing::ideal(Self) -> Ideal
+pub fn QuotientRing::krull_dimension(Self) -> Int
+pub fn QuotientRing::mul(Self, Coset, Coset) -> Coset
+pub fn QuotientRing::neg(Self, Coset) -> Coset
+pub fn QuotientRing::new(Ideal) -> Self
+pub fn QuotientRing::num_vars(Self) -> Int
+pub fn QuotientRing::of_poly(Self, Poly) -> Coset
+pub fn QuotientRing::one_coset(Self) -> Coset
+pub fn QuotientRing::pow(Self, Coset, Int) -> Coset
+pub fn QuotientRing::scalar(Self, Fp) -> Coset
+pub fn QuotientRing::scale(Self, Fp, Coset) -> Coset
+pub fn QuotientRing::sub(Self, Coset, Coset) -> Coset
+pub fn QuotientRing::tag_value(Self) -> Int
+pub fn QuotientRing::variable(Self, Int) -> Coset
+pub fn QuotientRing::zero_coset(Self) -> Coset
+
+pub struct RabinowitschIso {
+  loc : LocalizedRing
+  quot : QuotientRing
+}
+pub fn RabinowitschIso::backward(Self, Coset) -> LocElem
+pub fn RabinowitschIso::forward(Self, LocElem) -> Coset
+pub fn RabinowitschIso::new(LocalizedRing) -> Self
+pub fn RabinowitschIso::quotient_ring(Self) -> QuotientRing
+
+pub struct Rng {
+  mut state : Int
+}
+pub fn Rng::fp(Self) -> Fp
+pub fn Rng::fp_nonzero(Self) -> Fp
+pub fn Rng::new(Int) -> Self
+pub fn Rng::next_int(Self) -> Int
+pub fn Rng::range(Self, Int, Int) -> Int
+
+pub enum Sum[A, B] {
+  Inl(A)
+  Inr(B)
+}
+
+pub struct Term {
+  mut coeff : Fp
+  mono : Mono
+}
+pub fn Term::copy(Self) -> Self
+pub fn Term::new(Fp, Mono) -> Self
+
+pub struct Variety {
+  nvars : Int
+  ideal : Ideal
+  pts : Array[Pt]
+}
+pub fn Variety::affine_space(Int) -> Self
+pub fn Variety::contains_point(Self, Pt) -> Bool
+pub fn Variety::coordinate_ring(Self) -> CoordRing
+pub fn Variety::disjoint_union(Self, Self) -> Self
+pub fn Variety::empty(Int) -> Self
+pub fn Variety::from_generators(Int, Array[Poly]) -> Self
+pub fn Variety::from_ideal(Ideal) -> Self
+pub fn Variety::from_points(Int, Array[Pt]) -> Self
+pub fn Variety::ideal(Self) -> Ideal
+pub fn Variety::intersection_with(Self, Self) -> Self
+pub fn Variety::num_points(Self) -> Int
+pub fn Variety::num_vars(Self) -> Int
+pub fn Variety::point_index(Self, Pt) -> Int?
+pub fn Variety::points(Self) -> Array[Pt]
+pub fn Variety::principal_open_as_variety(Self, Poly) -> Self
+pub fn Variety::principal_open_points(Self, Poly) -> Array[Pt]
+pub fn Variety::product(Self, Self) -> Self
+pub fn Variety::same_point_set(Self, Self) -> Bool
+pub fn Variety::union_with(Self, Self) -> Self
+pub fn Variety::vanishing_ideal(Self) -> Ideal
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,5 @@
+import {
+  "arena/affine_algebra" @lib,
+}
+
+pkgtype(kind: "executable")
