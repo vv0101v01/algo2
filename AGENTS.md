@@ -1,53 +1,48 @@
-# Project Agents.md Guide
+# affine_algebra — contributor notes
 
-This is a [MoonBit](https://docs.moonbitlang.com) project.
+Exact computational algebraic geometry over $\mathbb F_7$ in MoonBit.
+Read `THEORY.md` before changing mathematical semantics; it is the
+specification, and the tests are its falsifiable counterpart.
 
-You can browse and install extra skills here:
-<https://github.com/moonbitlang/skills>
+## Package map (single package, block style, `///|` separated)
 
-## Project Structure
+- `fp.mbt` — $\mathbb F_7$, vectors, deterministic RNG (Schrage LCG).
+- `poly.mbt`, `univariate.mbt` — sparse lex polynomials; $\mathbb F_7[t]$
+  division/gcd/factorisation and minimal polynomials of algebra elements.
+- `groebner.mbt` — reduced Gröbner bases, ideal operations, Krull dimension.
+- `linalg.mbt`, `quotient.mbt`, `finalg.mbt` — exact linear algebra;
+  quotient rings by normal form; structure-constant finite algebras,
+  products/tensors/quotients/localizations and matrix homomorphisms.
+- `variety.mbt`, `category.mbt`, `localization.mbt` — affine varieties,
+  coordinate rings, pullbacks; type-level products/sums; principal
+  localization and local rings.
+- `rat.mbt`, `hilbert.mbt` — exact $\mathbb Q$, $\mathbb Q[t]$; Hilbert
+  functions/series/polynomials by lcm inclusion–exclusion.
+- `primary.mbt` — trace-form nilradicals, separating-element splitting,
+  primary decomposition (monomial / univariate / zero-dimensional).
+- `projective.mbt`, `scheme.mbt` — projective varieties and embeddings;
+  finite affine schemes, stalks, sections and morphisms.
 
-- MoonBit packages are organized per directory; each directory contains a
-  `moon.pkg` file listing its dependencies. Each package has its files and
-  blackbox test files (ending in `_test.mbt`) and whitebox test files (ending in
-  `_wbtest.mbt`).
+## Non-negotiable rules
 
-- In the toplevel directory, there is a `moon.mod` file listing module
-  metadata.
+- No stub mathematics. Anything outside an implemented exact regime
+  returns `None` or aborts with a message; never approximate.
+- Tests must be falsifiable: independent expected values or a second
+  algorithm, never re-deriving the implementation's own output.
+- Ring/algebra membership is guarded by structural tags
+  (`check_coset`, `check_elem`); do not bypass them.
 
-## Coding convention
+## Workflow
 
-- MoonBit code is organized in block style, each block is separated by `///|`,
-  the order of each block is irrelevant. In some refactorings, you can process
-  block by block independently.
+```sh
+moon fmt
+moon info
+moon check
+moon test                  # native; also --target js / wasm-gc
+moon run cmd/main          # must print ALL DEMO CHECKS PASSED
+```
 
-- Try to keep deprecated blocks in file called `deprecated.mbt` in each
-  directory.
-
-## Tooling
-
-- `moon fmt` is used to format your code properly.
-
-- `moon ide` provides project navigation helpers like `peek-def`, `outline`, and
-  `find-references`. See $moonbit-agent-guide for details.
-
-- `moon info` is used to update the generated interface of the package, each
-  package has a generated interface file `.mbti`, it is a brief formal
-  description of the package. If nothing in `.mbti` changes, this means your
-  change does not bring the visible changes to the external package users, it is
-  typically a safe refactoring.
-
-- In the last step, run `moon info && moon fmt` to update the interface and
-  format the code. Check the diffs of `.mbti` file to see if the changes are
-  expected.
-
-- Run `moon test` to check tests pass. MoonBit supports snapshot testing; when
-  changes affect outputs, run `moon test --update` to refresh snapshots.
-
-- Prefer `assert_eq` or `assert_true(pattern is Pattern(...))` for results that
-  are stable or very unlikely to change. For snapshot tests that record
-  structured debugging output, derive `Debug` and use `debug_inspect`, rather
-  than deriving `Show` for debugging. For solid, well-defined results (e.g.
-  scientific computations), prefer assertion tests. You can use
-  `moon coverage analyze > uncovered.log` to see which parts of your code are
-  not covered by tests.
+Verified toolchain: `moon 0.1.20261012`, `moonc v0.10.15`.
+Note: free functions must not name a typed parameter `self` (parsed as
+the deprecated method shorthand), and `Array` has no `remove_at`
+(rebuild the array, or `pop()` at the back).

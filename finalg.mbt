@@ -331,13 +331,7 @@ pub fn FinAlg::product(a : FinAlg, b : FinAlg, name : String) -> FinAlg {
 
 ///|
 /// Pair embedding: (x, y) in A x B from x in A, y in B.
-pub fn product_elem(
-  prod : FinAlg,
-  a : FinAlg,
-  x : FinElem,
-  y : FinElem,
-) -> FinElem {
-  let _ = a
+pub fn product_elem(prod : FinAlg, x : FinElem, y : FinElem) -> FinElem {
   let coords : Array[Fp] = []
   for c in x.coords {
     coords.push(c)
@@ -467,6 +461,7 @@ pub fn QuotientModel::ring(self : QuotientModel) -> QuotientRing {
 
 ///|
 pub fn QuotientModel::to_elem(self : QuotientModel, c : Coset) -> FinElem {
+  check_coset(self.ring, c)
   let coords : Array[Fp] = []
   for m in self.basis {
     coords.push(c.repr_poly().coeff_of(m))
@@ -476,6 +471,7 @@ pub fn QuotientModel::to_elem(self : QuotientModel, c : Coset) -> FinElem {
 
 ///|
 pub fn QuotientModel::to_coset(self : QuotientModel, x : FinElem) -> Coset {
+  check_elem(self.alg, x)
   let n = self.ring.num_vars()
   let mut acc = Poly::zero(n)
   for k in 0..<self.basis.length() {
@@ -502,6 +498,11 @@ pub struct AlgHom {
 pub fn AlgHom::from_basis_images(images : Array[FinElem]) -> AlgHom {
   let domdim = images.length()
   let coddim = if domdim == 0 { 0 } else { images[0].coords.length() }
+  if coddim == 0 && domdim > 0 {
+    // Zero codomain: the matrix has no rows, but its width must still
+    // record the domain dimension (from_rows([]) would lose it).
+    return { mat: Matrix::zero(0, domdim), }
+  }
   let rows : Array[Array[Fp]] = []
   for r in 0..<coddim {
     let row : Array[Fp] = []
@@ -601,17 +602,15 @@ pub fn AlgHom::is_isomorphism(
 /// phi : A -> C and psi : B -> C induce a unique hom A ⊗ B -> C with
 /// e_i ⊗ f_j |-> phi(e_i)·psi(f_j) (well-defined because images commute in
 /// the commutative ring C; uniqueness because pure tensors span A ⊗ B).
-/// `tensor` must be FinAlg::tensor(a, b, _). Caller verifies with
-/// AlgHom::verify -- including that phi/psi themselves are homs.
+/// The returned matrix is the hom out of FinAlg::tensor(a, b, _); caller
+/// verifies with AlgHom::verify, including that phi/psi are homs.
 pub fn tensor_copair_hom(
   a : FinAlg,
   b : FinAlg,
   c : FinAlg,
-  tensor : FinAlg,
   phi : AlgHom,
   psi : AlgHom,
 ) -> AlgHom {
-  let _ = tensor
   let images : Array[FinElem] = []
   for i in 0..<a.dim {
     for j in 0..<b.dim {
@@ -639,7 +638,7 @@ pub fn product_pair_hom(
   for i in 0..<c.dim {
     let x = phi.apply(a, c.basis_elem(i))
     let y = psi.apply(b, c.basis_elem(i))
-    images.push(product_elem(prod, a, x, y))
+    images.push(product_elem(prod, x, y))
   }
   AlgHom::from_basis_images(images)
 }

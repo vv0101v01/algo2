@@ -144,5 +144,85 @@ fn main {
   )
   expect(graph.num_points() == 6, "D(x) in A^1(F_7) has 6 points")
   println("")
+
+  // 7. Hilbert polynomial of the twisted cubic and a plane cubic.
+  let twisted = @lib.Ideal::new(4, [
+    @lib.Poly::from_int_terms(4, [(1, [0, 2, 0, 0]), (-1, [1, 0, 1, 0])]),
+    @lib.Poly::from_int_terms(4, [(1, [0, 1, 1, 0]), (-1, [1, 0, 0, 1])]),
+    @lib.Poly::from_int_terms(4, [(1, [0, 0, 2, 0]), (-1, [0, 1, 0, 1])]),
+  ])
+  let hp_twisted = match twisted.hilbert_polynomial() {
+    Some(h) => h.display()
+    None => abort("twisted cubic must be homogeneous")
+  }
+  let elliptic = @lib.Ideal::new(3, [
+    @lib.Poly::from_int_terms(3, [
+      (1, [0, 2, 1]),
+      (-1, [3, 0, 0]),
+      (-1, [1, 0, 2]),
+    ]),
+  ])
+  let genus = match elliptic.arithmetic_genus() {
+    Some(g) => g
+    None => abort("plane cubic genus")
+  }
+  println("[Hilbert] twisted cubic P(t) = \{hp_twisted}")
+  println("  plane cubic arithmetic genus = \{genus}")
+  expect(hp_twisted == "3*t + 1", "twisted cubic Hilbert polynomial")
+  expect(genus == 1, "plane cubic genus")
+  println("")
+
+  // 8. Primary decomposition with an embedded prime.
+  let mono_ideal = @lib.Ideal::new(2, [
+    @lib.Poly::from_int_terms(2, [(1, [2, 0])]),
+    @lib.Poly::from_int_terms(2, [(1, [1, 1])]),
+  ])
+  let pd = match @lib.primary_decomposition(mono_ideal) {
+    Some(d) => d
+    None => abort("monomial primary decomposition")
+  }
+  println(
+    "[Primary decomposition] (x^2, xy) has \{pd.num_components()} components",
+  )
+  for c in pd.components() {
+    println(
+      "  Q = \{@lib.poly_list_display(c.component().groebner())},  sqrt(Q) = \{@lib.poly_list_display(c.prime().groebner())}",
+    )
+  }
+  expect(pd.verify(mono_ideal), "primary decomposition verifies")
+  println("")
+
+  // 9. Projective geometry counts.
+  let segre = @lib.segre_p1_p1()
+  println(
+    "[Projective] |P^2(F_7)| = \{@lib.all_projective_points(2).length()}, |Segre P^1xP^1| = \{segre.num_points()}, dim = \{segre.dimension()}",
+  )
+  expect(@lib.all_projective_points(2).length() == 57, "P^2 point count")
+  expect(segre.num_points() == 64, "Segre point count")
+  println("")
+
+  // 10. Schemes: a fat point and the invisible F_49 point.
+  let fat_spec = match
+    @lib.AffineScheme::spec(@lib.Ideal::new(2, [x.pow(2), y])) {
+    Some(s) => s
+    None => abort("fat point spec")
+  }
+  let f49_ideal = @lib.Ideal::new(2, [
+    @lib.Poly::from_int_terms(2, [(1, [2, 0]), (1, [0, 0])]),
+    y,
+  ])
+  let f49_spec = match @lib.AffineScheme::spec(f49_ideal) {
+    Some(s) => s
+    None => abort("F49 spec")
+  }
+  println(
+    "[Spec] fat point: points=\{fat_spec.num_points()} length=\{fat_spec.total_length()} reduced=\{fat_spec.is_reduced()}",
+  )
+  println(
+    "[Spec] (x^2+1, y): Spec points=\{f49_spec.num_points()}, F_7-points=\{f49_spec.rational_points().length()}, residue degree=\{f49_spec.residue_degree(0)}",
+  )
+  expect(fat_spec.total_length() == 2, "fat point length")
+  expect(f49_spec.num_points() == 1, "F49 closed point")
+  println("")
   println("ALL DEMO CHECKS PASSED")
 }

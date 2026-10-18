@@ -68,7 +68,6 @@ test "quotient evaluate/scale/pow and localized of_coset" {
     q.scalar(Fp::new(4)).equal_to(q.of_poly(Poly::constant(2, Fp::new(4)))),
   )
   assert_true(q.zero_coset().is_zero())
-  let _ = q.tag_value()
   // of_coset lands in the localization as numerator class / 1.
   let loc = LocalizedRing::new(q, Poly::variable(2, 0))
   let via_coset = loc.of_coset(q.variable(1))
@@ -161,4 +160,27 @@ test "point-set equality, deduplication and empty coordinate ring details" {
     Inl(pr) => assert_true(pr.fst == 2 && pr.snd == 5)
     Inr(_) => assert_true(false)
   }
+}
+
+///|
+test "regression: pullback into the zero coordinate ring keeps matrix width" {
+  // X empty, Y = A^1: pullback k[Y] -> k[X] = 0 is the unique hom into
+  // the zero ring; its matrix is 0 x 7. Previously from_basis_images
+  // collapsed this to 0x0 and verify wrongly rejected it.
+  let empty_x = Variety::empty(1)
+  let line = Variety::affine_space(1)
+  let crx = empty_x.coordinate_ring()
+  let crl = line.coordinate_ring()
+  let hom = pullback_hom(PolyMap::identity(1), empty_x, line, crx, crl)
+  assert_eq(hom.matrix().num_rows(), 0)
+  assert_eq(hom.matrix().num_cols(), 7)
+  assert_true(hom.verify(crl.algebra(), crx.algebra()))
+  // FinAlg quotient edge cases: localize at 0 (zero ring) and at 1 (identity).
+  let a = FinAlg::function_algebra("F^3", 3)
+  let at_zero = a.localize_at(a.zero_elem(), "A_0")
+  assert_eq(at_zero.algebra().dim(), 0)
+  let at_one = a.localize_at(a.one_elem(), "A_1")
+  assert_eq(at_one.algebra().dim(), 3)
+  let qzero = a.quotient_by_subspace([], "A/0")
+  assert_eq(qzero.algebra().dim(), 3)
 }

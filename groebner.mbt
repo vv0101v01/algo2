@@ -249,11 +249,29 @@ pub fn Ideal::product(self : Ideal, other : Ideal) -> Ideal {
 /// Embed F_p[x_1..x_n] into F_p[t, x_1..x_n] (t is the new variable 0,
 /// hence the largest in lex order, i.e. an elimination order for t).
 fn poly_embed_t(f : Poly) -> Poly {
-  let mapping : Array[Int32] = []
-  for i in 0..<f.num_vars() {
-    mapping.push(i + 1)
+  f.relabel(shifted_mapping(f.num_vars(), 1), f.num_vars() + 1)
+}
+
+///|
+/// Elimination core shared by intersection and saturation: given
+/// generators in F_p[t, x_1..x_n] (t = variable 0, largest in lex),
+/// return the ideal they generate intersected with F_p[x_1..x_n].
+fn eliminate_tag_variable(big_gens : Array[Poly], nvars : Int32) -> Ideal {
+  let big_gb = reduced_groebner(big_gens)
+  let keep : Array[Poly] = []
+  for g in big_gb {
+    let mut mentions_t = false
+    for i in 0..<g.num_terms() {
+      if g.mono_at(i).exp_at(0) != 0 {
+        mentions_t = true
+        break
+      }
+    }
+    if !mentions_t {
+      keep.push(poly_drop_t(g))
+    }
   }
-  f.relabel(mapping, f.num_vars() + 1)
+  Ideal::new(nvars, keep)
 }
 
 ///|
@@ -294,21 +312,7 @@ pub fn Ideal::intersect(self : Ideal, other : Ideal) -> Ideal {
   for g in other.generators {
     gens.push(one_minus_t.mul(poly_embed_t(g)))
   }
-  let big_gb = reduced_groebner(gens)
-  let keep : Array[Poly] = []
-  for g in big_gb {
-    let mut mentions_t = false
-    for i in 0..<g.num_terms() {
-      if g.mono_at(i).exp_at(0) != 0 {
-        mentions_t = true
-        break
-      }
-    }
-    if !mentions_t {
-      keep.push(poly_drop_t(g))
-    }
-  }
-  Ideal::new(self.nvars, keep)
+  eliminate_tag_variable(gens, self.nvars)
 }
 
 ///|
@@ -317,6 +321,9 @@ pub fn Ideal::intersect(self : Ideal, other : Ideal) -> Ideal {
 /// This is the algebraic operation behind restriction to the principal
 /// open set D(f) = { a | f(a) ≠ 0 }.
 pub fn Ideal::saturate(self : Ideal, f : Poly) -> Ideal {
+  if f.num_vars() != self.nvars {
+    abort("Ideal::saturate: variable count mismatch")
+  }
   let n1 = self.nvars + 1
   let t = Poly::variable(n1, 0)
   let gens : Array[Poly] = []
@@ -324,21 +331,7 @@ pub fn Ideal::saturate(self : Ideal, f : Poly) -> Ideal {
     gens.push(poly_embed_t(g))
   }
   gens.push(Poly::one_poly(n1).sub(t.mul(poly_embed_t(f))))
-  let big_gb = reduced_groebner(gens)
-  let keep : Array[Poly] = []
-  for g in big_gb {
-    let mut mentions_t = false
-    for i in 0..<g.num_terms() {
-      if g.mono_at(i).exp_at(0) != 0 {
-        mentions_t = true
-        break
-      }
-    }
-    if !mentions_t {
-      keep.push(poly_drop_t(g))
-    }
-  }
-  Ideal::new(self.nvars, keep)
+  eliminate_tag_variable(gens, self.nvars)
 }
 
 ///|

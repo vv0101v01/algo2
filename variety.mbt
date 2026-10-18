@@ -290,18 +290,10 @@ pub fn Variety::product(self : Variety, other : Variety) -> Variety {
   let m = other.nvars
   let gens : Array[Poly] = []
   for g in self.ideal.gens() {
-    let mapping : Array[Int32] = []
-    for i in 0..<n {
-      mapping.push(i)
-    }
-    gens.push(g.relabel(mapping, n + m))
+    gens.push(g.relabel(identity_mapping(n), n + m))
   }
   for g in other.ideal.gens() {
-    let mapping : Array[Int32] = []
-    for i in 0..<m {
-      mapping.push(n + i)
-    }
-    gens.push(g.relabel(mapping, n + m))
+    gens.push(g.relabel(shifted_mapping(m, n), n + m))
   }
   Variety::from_ideal(Ideal::new(n + m, gens))
 }
@@ -328,7 +320,6 @@ pub fn Variety::disjoint_union(self : Variety, other : Variety) -> Variety {
     coords.push(Fp::zero())
     pts.push(Pt::new(coords))
   }
-  let _ = n
   for p in other.pts {
     let coords : Array[Fp] = []
     for _ in 0..<n {
@@ -364,17 +355,9 @@ pub fn Variety::principal_open_as_variety(self : Variety, f : Poly) -> Variety {
   let n = self.nvars
   let gens : Array[Poly] = []
   for g in self.ideal.gens() {
-    let mapping : Array[Int32] = []
-    for i in 0..<n {
-      mapping.push(i)
-    }
-    gens.push(g.relabel(mapping, n + 1))
+    gens.push(g.relabel(identity_mapping(n), n + 1))
   }
-  let mapping_f : Array[Int32] = []
-  for i in 0..<n {
-    mapping_f.push(i)
-  }
-  let f_emb = f.relabel(mapping_f, n + 1)
+  let f_emb = f.relabel(identity_mapping(n), n + 1)
   let t = Poly::variable(n + 1, n)
   gens.push(t.mul(f_emb).sub(Poly::one_poly(n + 1)))
   Variety::from_ideal(Ideal::new(n + 1, gens))

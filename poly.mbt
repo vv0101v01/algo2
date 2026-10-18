@@ -501,6 +501,26 @@ pub fn Poly::compose(self : Poly, subs : Array[Poly]) -> Poly {
 }
 
 ///|
+/// Identity variable mapping [0, 1, ..., n-1] for Poly::relabel.
+pub fn identity_mapping(n : Int32) -> Array[Int32] {
+  let m : Array[Int32] = []
+  for i in 0..<n {
+    m.push(i)
+  }
+  m
+}
+
+///|
+/// Shifted variable mapping i |-> i + offset for Poly::relabel.
+pub fn shifted_mapping(n : Int32, offset : Int32) -> Array[Int32] {
+  let m : Array[Int32] = []
+  for i in 0..<n {
+    m.push(i + offset)
+  }
+  m
+}
+
+///|
 /// Relabel variables: `mapping[i]` is the new index of old variable i.
 /// Used to embed polynomial rings into bigger ones (disjoint union of
 /// variables = the coproduct of polynomial algebras).
@@ -509,6 +529,14 @@ pub fn Poly::relabel(
   mapping : Array[Int32],
   new_nvars : Int32,
 ) -> Poly {
+  if mapping.length() != self.nvars {
+    abort("Poly::relabel: mapping length != variable count")
+  }
+  for v in mapping {
+    if v < 0 || v >= new_nvars {
+      abort("Poly::relabel: target variable index out of range")
+    }
+  }
   let raw : Array[Term] = []
   for t in self.terms {
     let e : Array[Int32] = []

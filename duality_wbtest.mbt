@@ -68,7 +68,7 @@ test "tensor coproduct: homs out of A⊗B are pairs of homs" {
   ])
   assert_true(phi.verify(a, c))
   assert_true(psi.verify(b, c))
-  let copair = tensor_copair_hom(a, b, c, t, phi, psi)
+  let copair = tensor_copair_hom(a, b, c, phi, psi)
   assert_true(copair.is_isomorphism(t, c))
   // Triangle identities: copair ∘ (a |-> a⊗1) = phi, copair ∘ (b|->1⊗b) = psi.
   let incl_a = AlgHom::from_basis_images([

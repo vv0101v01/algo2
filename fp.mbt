@@ -287,5 +287,8 @@ pub fn Rng::fp_nonzero(self : Rng) -> Fp {
 ///|
 /// Integer in [lo, hi] inclusive (requires lo <= hi).
 pub fn Rng::range(self : Rng, lo : Int32, hi : Int32) -> Int32 {
+  if hi < lo {
+    abort("Rng::range: empty range")
+  }
   lo + self.next_int() % (hi - lo + 1)
 }

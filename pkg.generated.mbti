@@ -6,7 +6,17 @@ pub const PRIME : Int = 7
 
 pub fn all_points(Int) -> Array[Pt]
 
+pub fn all_projective_lines() -> Array[PLine]
+
+pub fn all_projective_points(Int) -> Array[PPoint]
+
+pub fn binom_int(Int, Int) -> Int
+
+pub fn chart_point(PPoint, Int) -> Pt?
+
 pub fn coordinates_in_basis(Array[Fp], Array[Array[Fp]]) -> Array[Fp]?
+
+pub fn dehomogenize_poly(Poly, Int) -> Poly
 
 pub fn delta_poly(Pt) -> Poly
 
@@ -22,29 +32,73 @@ pub fn eval_poly_in_localized(LocalizedRing, Poly) -> LocElem
 
 pub fn extend_over_principal_localization(LocalizedRing, FinAlg, Array[FinElem], LocElem) -> FinElem?
 
+pub fn factor_univariate(Poly) -> Array[UniFactor]
+
+pub fn factorial_int(Int) -> Int
+
 pub fn field_equations_ideal(Int) -> Ideal
 
+pub fn finite_algebra_is_field(FinAlg) -> Bool
+
 pub fn groebner_basis(Array[Poly]) -> Array[Poly]
+
+pub fn hilbert_value_from_series(Array[Int], Int, Int) -> Int
+
+pub fn homogeneous_prime_of_point(PPoint) -> Ideal
+
+pub fn homogenize_poly(Poly, Int) -> Poly
+
+pub fn identity_mapping(Int) -> Array[Int]
 
 pub fn induced_point_map(AlgHom, Variety, Variety, CoordRing, CoordRing) -> Array[Pt]
 
 pub fn interpolate(Array[Pt], Array[Fp]) -> Poly
 
+pub fn irrelevant_ideal(Int) -> Ideal
+
+pub fn is_incident(PPoint, PLine) -> Bool
+
+pub fn is_irreducible_univariate(Poly) -> Bool
+
 pub fn is_variety_morphism(PolyMap, Variety, Variety) -> Bool
 
+pub fn line_intersection(PLine, PLine) -> PPoint?
+
+pub fn line_through(PPoint, PPoint) -> PLine?
+
 pub fn maximal_ideal_at(Pt) -> Ideal
+
+pub fn minimal_polynomial_mod(Ideal, Poly) -> Poly?
+
+pub fn minimal_polynomial_of_elem(QuotientModel, FinElem) -> Poly
+
+pub fn monomials_of_degree(Int, Int) -> Array[Mono]
+
+pub fn nilradical_basis(FinAlg) -> Array[Array[Fp]]
 
 pub fn pair_poly_maps(PolyMap, PolyMap) -> PolyMap
 
 pub fn[X, A, B] pairing((X) -> A, (X) -> B) -> (X) -> Prod[A, B]
 
+pub fn point_from_chart(Int, Pt) -> PPoint
+
+pub fn points_on_line(PLine) -> Array[PPoint]
+
 pub fn poly_list_display(Array[Poly]) -> String
 
 pub fn poly_list_equal(Array[Poly], Array[Poly]) -> Bool
 
+pub fn primary_decomposition(Ideal) -> PrimaryDecomposition?
+
+pub fn primary_decomposition_monomial(Ideal) -> PrimaryDecomposition?
+
+pub fn primary_decomposition_univariate(Ideal) -> PrimaryDecomposition?
+
+pub fn primary_decomposition_zero_dim(Ideal) -> PrimaryDecomposition?
+
 pub fn[A, B, C, D] prod_map(Prod[A, B], (A) -> C, (B) -> D) -> Prod[C, D]
 
-pub fn product_elem(FinAlg, FinAlg, FinElem, FinElem) -> FinElem
+pub fn product_elem(FinAlg, FinElem, FinElem) -> FinElem
 
 pub fn product_pair_hom(FinAlg, FinAlg, FinAlg, FinAlg, AlgHom, AlgHom) -> AlgHom
 
@@ -52,13 +106,27 @@ pub fn product_projection_first(Int, Int) -> PolyMap
 
 pub fn product_projection_second(Int, Int) -> PolyMap
 
+pub fn projective_point_count(Int) -> Int
+
+pub fn projective_transform_point(Matrix, PPoint) -> PPoint?
+
 pub fn pullback_function(PolyMap, Variety, Variety, CoordRing, FinElem) -> FinElem
 
 pub fn pullback_hom(PolyMap, Variety, Variety, CoordRing, CoordRing) -> AlgHom
 
 pub fn pure_tensor(FinAlg, FinAlg, FinElem, FinElem) -> FinElem
 
+pub fn radical_univariate(Poly) -> Poly
+
 pub fn reduced_groebner(Array[Poly]) -> Array[Poly]
+
+pub fn scheme_morphism_from_poly_map(AffineScheme, AffineScheme, PolyMap) -> SchemeMorphism?
+
+pub fn segre_p1_p1() -> ProjVariety
+
+pub fn segre_point(PPoint, PPoint) -> PPoint
+
+pub fn shifted_mapping(Int, Int) -> Array[Int]
 
 pub fn span_basis(Array[Array[Fp]]) -> Array[Array[Fp]]
 
@@ -68,7 +136,9 @@ pub fn[A, B, C] sum_elim(Sum[A, B], (A) -> C, (B) -> C) -> C
 
 pub fn[A, B, C, D] sum_map(Sum[A, B], (A) -> C, (B) -> D) -> Sum[C, D]
 
-pub fn tensor_copair_hom(FinAlg, FinAlg, FinAlg, FinAlg, AlgHom, AlgHom) -> AlgHom
+pub fn tensor_copair_hom(FinAlg, FinAlg, FinAlg, AlgHom, AlgHom) -> AlgHom
+
+pub fn univariate_gcd(Poly, Poly) -> Poly
 
 pub fn vanishing_ideal_of_points(Int, Array[Pt]) -> Ideal
 
@@ -94,9 +164,49 @@ pub fn vec_sub(Array[Fp], Array[Fp]) -> Array[Fp]
 
 pub fn vec_zero(Int) -> Array[Fp]
 
+pub fn veronese2_point(PPoint) -> PPoint
+
+pub fn veronese_conic() -> ProjVariety
+
 // Errors
 
 // Types and methods
+pub struct AffineScheme {
+  ring : QuotientRing
+  model : QuotientModel
+  components : Array[Ideal]
+  primes : Array[Ideal]
+  local_models : Array[QuotientModel]
+  residue_models : Array[QuotientModel]
+}
+pub fn AffineScheme::closed_subscheme(Self, Ideal) -> Self?
+pub fn AffineScheme::closed_subset(Self, Ideal) -> Array[Int]
+pub fn AffineScheme::component_at(Self, Int) -> Ideal
+pub fn AffineScheme::global_model(Self) -> QuotientModel
+pub fn AffineScheme::global_sections_hom(Self) -> AlgHom
+pub fn AffineScheme::ideal(Self) -> Ideal
+pub fn AffineScheme::is_nilpotent_section(Self, Poly) -> Bool
+pub fn AffineScheme::is_reduced(Self) -> Bool
+pub fn AffineScheme::length_at(Self, Int) -> Int
+pub fn AffineScheme::num_points(Self) -> Int
+pub fn AffineScheme::prime_at(Self, Int) -> Ideal
+pub fn AffineScheme::principal_open_indices(Self, Poly) -> Array[Int]
+pub fn AffineScheme::rational_points(Self) -> Array[Pt]
+pub fn AffineScheme::reduced_scheme(Self) -> Self
+pub fn AffineScheme::residue_degree(Self, Int) -> Int
+pub fn AffineScheme::residue_hom(Self, Int) -> AlgHom
+pub fn AffineScheme::residue_model(Self, Int) -> QuotientModel
+pub fn AffineScheme::restriction_hom(Self, Array[Int], Array[Int]) -> AlgHom
+pub fn AffineScheme::ring(Self) -> QuotientRing
+pub fn AffineScheme::section_of_poly(Self, Array[Int], Poly) -> FinElem
+pub fn AffineScheme::sections_algebra(Self, Array[Int]) -> FinAlg
+pub fn AffineScheme::spec(Ideal) -> Self?
+pub fn AffineScheme::specializes_to(Self, Int, Int) -> Bool
+pub fn AffineScheme::stalk_model(Self, Int) -> QuotientModel
+pub fn AffineScheme::support_indices(Self, Poly) -> Array[Int]
+pub fn AffineScheme::total_length(Self) -> Int
+pub fn AffineScheme::vanishes_at_all_residues(Self, Poly) -> Bool
+
 pub struct AlgHom {
   mat : Matrix
 }
@@ -211,13 +321,25 @@ pub struct Ideal {
   generators : Array[Poly]
   gb : Array[Poly]
 }
+pub fn Ideal::arithmetic_genus(Self) -> Int?
 pub fn Ideal::contains(Self, Poly) -> Bool
 pub fn Ideal::equal_to(Self, Self) -> Bool
 pub fn Ideal::finite_dimension(Self) -> Int?
 pub fn Ideal::gens(Self) -> Array[Poly]
 pub fn Ideal::groebner(Self) -> Array[Poly]
+pub fn Ideal::hilbert_agreement_bound(Self) -> Int?
+pub fn Ideal::hilbert_function(Self, Int) -> Int?
+pub fn Ideal::hilbert_function_values(Self, Int) -> Array[Int]?
+pub fn Ideal::hilbert_polynomial(Self) -> RatPoly?
+pub fn Ideal::hilbert_series_numerator(Self) -> Array[Int]?
 pub fn Ideal::in_radical(Self, Poly) -> Bool
+pub fn Ideal::initial_monomials(Self) -> Array[Mono]
 pub fn Ideal::intersect(Self, Self) -> Self
+pub fn Ideal::is_homogeneous(Self) -> Bool
+pub fn Ideal::is_monomial_ideal(Self) -> Bool
+pub fn Ideal::is_primary_zero_dim(Self) -> Bool
+pub fn Ideal::is_prime_zero_dim(Self) -> Bool
+pub fn Ideal::is_subset_of(Self, Self) -> Bool
 pub fn Ideal::is_unit_ideal(Self) -> Bool
 pub fn Ideal::is_zero_ideal(Self) -> Bool
 pub fn Ideal::krull_dimension(Self) -> Int
@@ -225,6 +347,11 @@ pub fn Ideal::new(Int, Array[Poly]) -> Self
 pub fn Ideal::normal_form(Self, Poly) -> Poly
 pub fn Ideal::num_vars(Self) -> Int
 pub fn Ideal::product(Self, Self) -> Self
+pub fn Ideal::projective_degree(Self) -> Int?
+pub fn Ideal::projective_dimension_via_hilbert(Self) -> Int?
+pub fn Ideal::radical_of_monomial(Self) -> Self?
+pub fn Ideal::radical_via_decomposition(Self) -> Self?
+pub fn Ideal::radical_zero_dim(Self) -> Self?
 pub fn Ideal::saturate(Self, Poly) -> Self
 pub fn Ideal::standard_monomials(Self) -> Array[Mono]?
 pub fn Ideal::sum(Self, Self) -> Self
@@ -324,6 +451,26 @@ pub fn Mono::quotient(Self, Self) -> Self
 pub fn Mono::total_degree(Self) -> Int
 pub fn Mono::variable(Int, Int) -> Self
 
+pub struct PLine {
+  coeffs : Array[Fp]
+}
+pub fn PLine::coeffs(Self) -> Array[Fp]
+pub fn PLine::display(Self) -> String
+pub fn PLine::equal_to(Self, Self) -> Bool
+pub fn PLine::new(Array[Fp]) -> Self?
+
+pub struct PPoint {
+  coords : Array[Fp]
+}
+pub fn PPoint::compare(Self, Self) -> Int
+pub fn PPoint::coord(Self, Int) -> Fp
+pub fn PPoint::coords_array(Self) -> Array[Fp]
+pub fn PPoint::display(Self) -> String
+pub fn PPoint::equal_to(Self, Self) -> Bool
+pub fn PPoint::must(Array[Fp]) -> Self
+pub fn PPoint::new(Array[Fp]) -> Self?
+pub fn PPoint::num_coords(Self) -> Int
+
 pub struct Poly {
   nvars : Int
   terms : Array[Term]
@@ -338,6 +485,8 @@ pub fn Poly::equal_to(Self, Self) -> Bool
 pub fn Poly::eval(Self, Array[Fp]) -> Fp
 pub fn Poly::from_int_terms(Int, Array[(Int, Array[Int])]) -> Self
 pub fn Poly::from_terms(Int, Array[Term]) -> Self
+pub fn Poly::homogeneous_component(Self, Int) -> Self
+pub fn Poly::is_homogeneous(Self) -> Bool
 pub fn Poly::is_zero(Self) -> Bool
 pub fn Poly::lead_coeff(Self) -> Fp
 pub fn Poly::lead_mono(Self) -> Mono
@@ -355,6 +504,7 @@ pub fn Poly::reduce_by(Self, Array[Self]) -> Self
 pub fn Poly::relabel(Self, Array[Int], Int) -> Self
 pub fn Poly::scale(Self, Fp) -> Self
 pub fn Poly::sub(Self, Self) -> Self
+pub fn Poly::total_degree(Self) -> Int
 pub fn Poly::variable(Int, Int) -> Self
 pub fn Poly::zero(Int) -> Self
 pub impl Add for Poly
@@ -372,11 +522,50 @@ pub fn PolyMap::identity(Int) -> Self
 pub fn PolyMap::new(Int, Array[Poly]) -> Self
 pub fn PolyMap::pullback_poly(Self, Poly) -> Poly
 
+pub struct PrimaryComponent {
+  component : Ideal
+  prime : Ideal
+}
+pub fn PrimaryComponent::component(Self) -> Ideal
+pub fn PrimaryComponent::prime(Self) -> Ideal
+
+pub struct PrimaryDecomposition {
+  components : Array[PrimaryComponent]
+}
+pub fn PrimaryDecomposition::associated_primes(Self) -> Array[Ideal]
+pub fn PrimaryDecomposition::components(Self) -> Array[PrimaryComponent]
+pub fn PrimaryDecomposition::intersection(Self, Int) -> Ideal
+pub fn PrimaryDecomposition::num_components(Self) -> Int
+pub fn PrimaryDecomposition::verify(Self, Ideal) -> Bool
+
 pub struct Prod[A, B] {
   fst : A
   snd : B
 }
 pub fn[A, B] Prod::new(A, B) -> Self[A, B]
+
+pub struct ProjVariety {
+  num_coords : Int
+  ideal : Ideal
+  pts : Array[PPoint]
+}
+pub fn ProjVariety::affine_cone(Self) -> Variety
+pub fn ProjVariety::ambient_dim(Self) -> Int
+pub fn ProjVariety::arithmetic_genus(Self) -> Int?
+pub fn ProjVariety::chart(Self, Int) -> Variety
+pub fn ProjVariety::chart_ring(Self, Int) -> QuotientRing
+pub fn ProjVariety::chart_scheme(Self, Int) -> AffineScheme?
+pub fn ProjVariety::contains_point(Self, PPoint) -> Bool
+pub fn ProjVariety::degree(Self) -> Int?
+pub fn ProjVariety::dimension(Self) -> Int
+pub fn ProjVariety::from_generators(Int, Array[Poly]) -> Self
+pub fn ProjVariety::from_ideal(Ideal) -> Self
+pub fn ProjVariety::from_points(Int, Array[PPoint]) -> Self
+pub fn ProjVariety::ideal(Self) -> Ideal
+pub fn ProjVariety::num_coords(Self) -> Int
+pub fn ProjVariety::num_points(Self) -> Int
+pub fn ProjVariety::points(Self) -> Array[PPoint]
+pub fn ProjVariety::transform(Self, Matrix) -> Self
 
 pub struct Pt {
   coords : Array[Fp]
@@ -421,7 +610,6 @@ pub fn QuotientRing::pow(Self, Coset, Int) -> Coset
 pub fn QuotientRing::scalar(Self, Fp) -> Coset
 pub fn QuotientRing::scale(Self, Fp, Coset) -> Coset
 pub fn QuotientRing::sub(Self, Coset, Coset) -> Coset
-pub fn QuotientRing::tag_value(Self) -> Int
 pub fn QuotientRing::variable(Self, Int) -> Coset
 pub fn QuotientRing::zero_coset(Self) -> Coset
 
@@ -434,6 +622,52 @@ pub fn RabinowitschIso::forward(Self, LocElem) -> Coset
 pub fn RabinowitschIso::new(LocalizedRing) -> Self
 pub fn RabinowitschIso::quotient_ring(Self) -> QuotientRing
 
+pub struct Rat {
+  num : Int
+  den : Int
+} derive(Eq)
+pub fn Rat::abs(Self) -> Self
+pub fn Rat::add(Self, Self) -> Self
+pub fn Rat::display(Self) -> String
+pub fn Rat::div_rat(Self, Self) -> Self
+pub fn Rat::equal(Self, Self) -> Bool
+pub fn Rat::from_int(Int) -> Self
+pub fn Rat::is_integer(Self) -> Bool
+pub fn Rat::is_negative(Self) -> Bool
+pub fn Rat::is_zero(Self) -> Bool
+pub fn Rat::mul(Self, Self) -> Self
+pub fn Rat::neg(Self) -> Self
+pub fn Rat::new(Int, Int) -> Self
+pub fn Rat::not_equal(Self, Self) -> Bool
+pub fn Rat::one() -> Self
+pub fn Rat::sub(Self, Self) -> Self
+pub fn Rat::to_int_exact(Self) -> Int
+pub fn Rat::zero() -> Self
+pub impl Add for Rat
+pub impl Mul for Rat
+pub impl Neg for Rat
+pub impl Sub for Rat
+
+pub struct RatPoly {
+  coeffs : Array[Rat]
+}
+pub fn RatPoly::add(Self, Self) -> Self
+pub fn RatPoly::coeff(Self, Int) -> Rat
+pub fn RatPoly::constant(Rat) -> Self
+pub fn RatPoly::degree(Self) -> Int
+pub fn RatPoly::display(Self) -> String
+pub fn RatPoly::equal_to(Self, Self) -> Bool
+pub fn RatPoly::eval_int(Self, Int) -> Rat
+pub fn RatPoly::eval_int_exact(Self, Int) -> Int
+pub fn RatPoly::from_coeffs(Array[Rat]) -> Self
+pub fn RatPoly::is_zero(Self) -> Bool
+pub fn RatPoly::leading_coefficient(Self) -> Rat
+pub fn RatPoly::linear(Rat) -> Self
+pub fn RatPoly::mul(Self, Self) -> Self
+pub fn RatPoly::scale(Self, Rat) -> Self
+pub fn RatPoly::sub(Self, Self) -> Self
+pub fn RatPoly::zero() -> Self
+
 pub struct Rng {
   mut state : Int
 }
@@ -442,6 +676,13 @@ pub fn Rng::fp_nonzero(Self) -> Fp
 pub fn Rng::new(Int) -> Self
 pub fn Rng::next_int(Self) -> Int
 pub fn Rng::range(Self, Int, Int) -> Int
+
+pub struct SchemeMorphism {
+  map : PolyMap
+}
+pub fn SchemeMorphism::point_index_map(Self, AffineScheme, AffineScheme, Int) -> Int?
+pub fn SchemeMorphism::poly_map(Self) -> PolyMap
+pub fn SchemeMorphism::pullback_coset(Self, AffineScheme, Coset) -> Coset
 
 pub enum Sum[A, B] {
   Inl(A)
@@ -454,6 +695,13 @@ pub struct Term {
 }
 pub fn Term::copy(Self) -> Self
 pub fn Term::new(Fp, Mono) -> Self
+
+pub struct UniFactor {
+  factor : Poly
+  exponent : Int
+}
+pub fn UniFactor::exponent(Self) -> Int
+pub fn UniFactor::factor(Self) -> Poly
 
 pub struct Variety {
   nvars : Int

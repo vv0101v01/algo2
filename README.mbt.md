@@ -1,76 +1,71 @@
 # arena/affine_algebra
 
-Exact affine algebraic geometry over **F_7** in MoonBit — every construction
-named below is implemented as an algorithm and checked by falsifiable tests,
-including the places where naive versions fail (division by a non-Groebner
-basis, fraction equality in the presence of zero divisors,
-$I(V(I)) \neq \sqrt{I}$ over a finite field, inverting a nilpotent).
+A verified computational algebra library in MoonBit, working over
+$F_7$. It builds, from sparse polynomial arithmetic and Groebner bases
+upwards:
 
-- **Foundations**: F_7 with Fermat inverses; sparse multivariate
-  polynomials in lex order; multivariate division; Buchberger's algorithm
-  with the unique reduced Groebner basis.
-- **Ideal calculus**: membership, equality, sum, product, intersection
-  (tag-variable elimination), saturation and radical membership
-  (Rabinowitsch), monomial staircase, F_7-dimension and Krull dimension.
-- **Quotient rings** `R/I` by normal forms, with representative-independence,
-  kernels and nilpotents tested.
-- **Finite F_7-algebras** by structure constants: `check_axioms`, units by
-  exact solving, homomorphisms as verified matrices, **direct products**
-  (block-diagonal, pairing universal property), **tensor products**
-  (Kronecker constants, bilinearity, coproduct universal property),
-  quotients by ideals, localization `A_f ≅ A / {a | f^N a = 0}`.
-- **Affine varieties** over F_7: point enumeration, `V`/`I`, the
-  finite-field Nullstellenssatz
-  `I(V(I)) = sqrt(I + (x_i^7 - x_i))` checked against brute force,
-  **coordinate rings** `k[X]` as function tables with delta-polynomial
-  interpolation / CRT (`k[X] ≅ prod_{a in X} F_7`, first isomorphism theorem
-  verified against the staircase quotient model).
-- **Products of varieties** with `k[X x Y] ≅ k[X] (x) k[Y]`;
-  **disjoint unions** by the tagged embedding with computed vanishing ideal
-  and `k[X ⊔ Y] ≅ k[X] x k[Y]`.
-- **Contravariance**: pullback on polynomials, function tables and algebra
-  homs, functor law `(g∘f)* = f* ∘ g*`, plus the Spec direction — point
-  maps recovered from homs by tracking primitive idempotents (finite
-  anti-equivalence).
-- **Localization**: `S^{-1}(R/I)` for `S = {f^k}` with the saturation-based
-  equality that is correct for non-domains; the Rabinowitsch isomorphism
-  `S^{-1}(R/I) ≅ R[t]/(I, tf-1)` in both directions; the local ring at a
-  point with `Option`-refused illegal denominators; extension over `R_f`
-  exists iff `f` maps to a unit (decided, both directions tested).
+- coordinate rings $F_7[x]/I$ and quotient rings with normal-form
+  representatives and ideal membership as exact decision procedures;
+- finite-dimensional $F_7$-algebras in structure-constant form, with
+  direct products, tensor products, quotients, principal localizations
+  $A_f$, matrix homomorphisms and isomorphism verification;
+- affine varieties over $F_7$, products, tagged disjoint unions,
+  polynomial morphisms and their contravariant pullbacks, together
+  with the type-level product/coproduct duality that Spec exchanges;
+- localizations by principal multiplicative sets, local rings at
+  points, saturation and the Rabinowitsch isomorphism;
+- exact Hilbert functions, series and polynomials, with projective
+  dimension, degree and arithmetic genus derived by lcm
+  inclusion–exclusion over initial monomials (never by interpolation);
+- primary decomposition in the monomial (any dimension), univariate
+  and zero-dimensional regimes, including embedded primes;
+- projective points, varieties, charts, affine cones, line duality,
+  Segre and Veronese embeddings, and projective linear transformations;
+- zero-dimensional affine schemes $\mathrm{Spec}(F_7[x]/I)$ with
+  stalks, residue fields, lengths/multiplicities, structure-sheaf
+  sections, restriction maps, principal opens, closed/reduced
+  subschemes and scheme morphisms.
 
-Type-level counterparts live in `category.mbt`: `Prod`/`pairing` and
-`Sum`/`sum_elim`, whose completeness is enforced by match exhaustiveness.
-
-Theory, theorems, formulas and the theorem → algorithm → test map are in
-**[THEORY.md](THEORY.md)** (in Chinese), including an explicit list of what
-is *not* claimed (no compile-time Groebner bases exist in MoonBit;
-ideal-indexed coset types would need dependent types; point sets are
-F_7-points, with the equation level kept separate).
-
-## Run
-
-Requires the MoonBit toolchain (`moon` 0.1.20261012 / `moonc` v0.10.15 was
-used to develop this; the official installer is
-`curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash`), then
-`export PATH="$HOME/.moon/bin:$PATH"`.
-
-```bash
-moon test           # full test suite
-moon run cmd/main   # computed tour with self-checks
-```
+Nothing here is a toy model or a tautological test: every public claim
+is backed by a falsifiable white-box or black-box test, including
+independent cross-checks of the same theorem by different algorithms
+(for example, point enumeration against saturated vanishing ideals,
+and Hilbert numerators against independently derived formulas). Full
+definitions, theorems and derivations are in `THEORY.md`.
 
 ## Layout
 
-| File | Contents |
+| File | Content |
 |---|---|
-| `fp.mbt` | F_7, vectors, deterministic RNG for property tests |
-| `poly.mbt` | monomials/lex order, polynomials, division, S-polynomials |
-| `groebner.mbt` | Buchberger, ideals, intersection/saturation, dimensions |
-| `quotient.mbt` | quotient rings R/I via normal forms |
-| `linalg.mbt` | exact linear algebra over F_7 |
-| `finalg.mbt` | finite algebras, product/tensor/quotient/localization, `AlgHom` |
-| `variety.mbt` | varieties, coordinate rings, morphisms & pullback |
-| `localization.mbt` | `S^{-1}(R/I)`, Rabinowitsch iso, local ring at a point |
-| `category.mbt` | type-level `Prod`/`Sum` universal properties |
-| `*_wbtest.mbt`, `affine_algebra_test.mbt` | whitebox & public-API tests |
-| `cmd/main/` | executable tour (`moon run cmd/main`) |
+| `fp.mbt` | $F_7$, vectors, deterministic RNG |
+| `poly.mbt`, `univariate.mbt` | sparse lex polynomials; $F_7[t]$ division, gcd, trial-division factorisation |
+| `groebner.mbt` | reduced Groebner bases, ideal operations, Krull dimension |
+| `linalg.mbt` | exact RREF linear algebra over $F_7$ |
+| `quotient.mbt`, `finalg.mbt` | quotient rings and finite algebras, homomorphisms |
+| `variety.mbt`, `category.mbt` | affine varieties; type-level products/sums |
+| `localization.mbt` | principal localization, local rings, Rabinowitsch |
+| `rat.mbt`, `hilbert.mbt` | exact rationals; Hilbert series/polynomials |
+| `primary.mbt` | zero-dimensional algebra infrastructure; primary decomposition |
+| `projective.mbt` | projective points, varieties, embeddings, PGL |
+| `scheme.mbt` | finite affine schemes, stalks, sections, morphisms |
+
+## Build and test
+
+Install MoonBit from <https://www.moonbitlang.com/download/>, then:
+
+```sh
+moon check
+moon test              # also: --target js / --target wasm
+moon run cmd/main      # narrated tour; prints ALL DEMO CHECKS PASSED
+```
+
+Verified with `moon 0.1.20261012`, `moonc v0.10.15`.
+
+## Scope (enforced, not hidden)
+
+Constructions outside the implemented exact regimes fail loudly:
+Hilbert data is `None` for non-homogeneous ideals; primary
+decomposition returns `None` for positive-dimensional non-monomial
+ideals; `AffineScheme::spec` returns `None` for positive-dimensional
+quotients; invariant violations abort with messages. See §15 of
+`THEORY.md` for the precise boundaries.

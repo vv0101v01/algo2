@@ -2,7 +2,7 @@
 
 本文件給出本庫每個數學結構的**定義、公式、所用定理、由此衍生的演算法**，
 以及定理 → 代碼 → 測試的對照。凡是本庫沒有真正實作或無法在 MoonBit
-類型系統中成立的主張，都在 §11 明確列為邊界，而不是含糊帶過。
+類型系統中成立的主張，都在 §15 明確列為邊界，而不是含糊帶過。
 
 約定：$k=\mathbb F_7$（素數在代碼中是 `pub const PRIME : Int = 7`），
 $R=k[x_1,\dots,x_n]$，單項式序為 lex，$x_1>\cdots>x_n$（代碼以 0-based 變量，
@@ -124,7 +124,7 @@ $\mathrm{NF}_I(f)$ 是陪集的唯一正規代表元；運算 = 代表元運算�
 類型事實：`Coset` 與 `Poly` 是不同類型，原多項式不經商映射
 `of_poly` 無法當陪集用。但理想 $I$ 是運行時數據，MoonBit 無依賴類型，
 故「哪個商」以運行時結構標籤守衛，混用即中止——這是明寫的邊界，
-不偽裝成編譯期索引（§11）。
+不偽裝成編譯期索引（§15）。
 
 ---
 
@@ -374,7 +374,140 @@ $K$ 是 $A\to A_f$ 的核；而 $\bar f$ 在 $A/K$ 中的乘法映射單射
 
 ---
 
-## 10. 定理 → 衍生演算法總表（連帶結果）
+## 10. Hilbert 函數、級數與多項式
+
+設 $I\subset S=\mathbb F_7[x_0,\ldots,x_n]$ 為齊次理想，
+$R=S/I=\bigoplus_{d\ge0}R_d$ 為標準分級商。
+
+**定義。**
+$$
+H_R(d)=\dim_{\mathbb F_7}R_d,\qquad
+\operatorname{HS}_R(t)=\sum_{d\ge0}H_R(d)t^d
+      =\frac{Q_R(t)}{(1-t)^{n+1}} .
+$$
+Hilbert 定理說：當 $d$ 足夠大時，$H_R(d)=P_R(d)$，
+其中 $P_R\in\mathbb Q[t]$，$\deg P_R=\dim R-1$（$\dim R=0$ 時 $P_R=0$）；
+若 $\dim R=r+1>0$，
+$$
+P_R(t)=\frac{e}{r!}t^r+\text{(低次項)},\qquad
+p_a=(-1)^r\bigl(P_R(0)-1\bigr),
+$$
+$e$ 是 $\operatorname{Proj}R$ 的次數，$p_a$ 是算術虧格。
+
+**演算法（非插值）。** 取 $I$ 的 lex Gröbner 基之首單項式
+$m_1,\ldots,m_s$。$I$ 齊次時 $R$ 與 $S/\operatorname{in}(I)$ 有相同 Hilbert
+函數，而次數 $d$ 的倖存單項式即次數 $d$ 的全部單項式扣去被某個 $m_i$
+整除者。下標集 $A$ 對應 $L_A=\operatorname{lcm}_{i\in A}m_i$，容斥排除給出
+嚴格等式
+$$
+Q_R(t)=\sum_{A\subseteq[s]}(-1)^{|A|}t^{\deg L_A},\qquad
+H_R(d)=\sum_{A\subseteq[s]}(-1)^{|A|}
+       \binom{d-\deg L_A+n}{n}_{+}.
+$$
+第一式的係數全部是整數；$t=1$ 處零點的重數決定射影維數，展開後用
+$\binom{t+r-j}{r}$ 二項基的精確有理展開得 $P_R$，並由
+$\mathrm{reg}\le \deg Q_R-(n+1-\dim R)+1$ 給出已證明的上界。
+精確 $\mathbb Q$ 實作在 `rat.mbt`，沒有浮點插值捷徑。
+
+**可否證測試。** $\mathbb P^2$ 的 $P(t)=\binom{t+2}{2}$、圓錐 $2t+1$、
+平面三次 $3t$（$p_a=1$）、扭立方曲線 $3t+1$，以及兩點理想
+$H=(1,2,2,\ldots)$ 而 $P=2$：最後一例專門區分「在低次點插值」和真正推導，
+因為二者在 $d=0$ 已不同。
+
+---
+
+## 11. 主分解（primary decomposition）
+
+理想 $Q$ 稱為**主理想**，若 $ab\in Q$ 蕴涵 $a\in Q$ 或某個 $b^k\in Q$；
+則 $\sqrt Q$ 素。Noether——Lasker 定理說每個理想都是有限交
+$$
+I=Q_1\cap\cdots\cap Q_r,\qquad \sqrt{Q_i}=P_i,
+$$
+其中相伴素理想集合 $\{P_i\}$ 唯一；極小素理想對應的分量唯一，嵌入分量
+一般不唯一，程式回傳的是可驗證的一個合法選擇。
+
+本庫提供三個**精確完備**的演算區制；超出者回 `None`：
+
+1. **主項式理想（任意維數）**：先按變量支集分裂為互素的不可約
+   $(x_{i_1}^{a_1},\ldots,x_{i_r}^{a_r})$（支集劃分函數
+   $F(S)=\prod_{j\notin S}x_j^{M}\bmod I$ 保留完全落在 $S$ 內的生成元，
+   互素性消去其餘生成元），再相交同一根的分量。經典例
+   $(x^2,xy)=(x)\cap(x^2,y)$，故 $(x,y)$ 是真正的嵌入相伴素。
+2. **單變量 PID**：把生成元取 gcd 後以精確不可約因子分解重建；
+   $\mathbb F_7[x]$ 上以 monic 約數試除列舉，輸出 $(p_i^{e_i})$。
+3. **零維一般理想**：令 $A=S/I$，根理想由跡型式的核給出：
+   $a$ 冪零即可用跡型式 $(a,b)\mapsto\operatorname{Tr}(m_{ab})$ 探測，
+   而 $\mathfrak N(A)=\ker(\text{跡型式})$。檢查 $A/\mathfrak N(A)$ 是否是域：
+   在約化代數中 Frobenius $a\mapsto a^7$ 的固定空間
+   $B_0=\{a:a^7=a\}$ 是有限佈爾環 $\mathbb F_7^{\#\mathrm{Spec}}$；
+   它是否大於基域可以線性判讀。非域時取 $B_0$ 中非純量元作為分離元，
+   用其在 $\mathbb F_7$ 上的極小多項式線性因子做 CRT 分裂，遞迴至
+   局部主分量。每次分裂在交回原像時以理想相等檢查驗證。
+
+由此得到連帶程序：零維與單項式根 $\sqrt I=\bigcap P_i$、相伴/極小/
+嵌入素理想、零維及單項式素性判定、有限代數冪零根與元素極小多項式。
+正維非單項式（例如拋物線 $(y-x^2)$）誠實回 `None`。
+
+---
+
+## 12. 投射幾何
+
+射影空間的點是標量軌道而非座標向量：
+$$
+\mathbb P^n(\mathbb F_7)=
+  (\mathbb F_7^{\,n+1}\setminus0)/\mathbb F_7^\times,\qquad
+|\mathbb P^n(\mathbb F_7)|=\frac{7^{n+1}-1}{6}.
+$$
+程式總以正規形（第一個非零座標為 $1$）儲存每個軌道，令等值判斷是
+逐座標比較。齊次理想 $I$ 定義 $\operatorname{Proj}$ 簇
+$V_+(I)$；仿射錐與每個標準圖卡 $U_i=\{x_i\ne0\}$ 滿足圖卡
+同構 $U_i\cong\mathbb A^n$，點數關係
+$|C(X)(\mathbb F_7)|=1+6|X(\mathbb F_7)|$ 在測試中逐點驗證。
+
+射影直線由 Cramer 式（$2\times2$ 子行列式）求得：兩不同點定唯一線，
+兩不同線交於唯一點；這在 $\mathbb P^2(\mathbb F_7)$ 的 57 點/57 線
+有限射影平面上全樣本檢查。Segre 嵌入
+$\mathbb P^1\times\mathbb P^1\to\mathbb P^3$ 與二次 Veronese
+$\mathbb P^1\to\mathbb P^2$ 都以實際像點反解其齊次方程再驗證一致；
+Segre 四元數面 $z_{00}z_{11}-z_{01}z_{10}=0$ 的 Hilbert 多項式是
+$(t+1)^2$。射影變換 $A\in\mathrm{PGL}_{n+1}$ 以逆矩陣作用於方程，
+保持齊次理想、維數、Hilbert 多項式與 $\mathbb F_7$-點數。
+
+---
+
+## 13. 概形層語義（有限仿射概形）
+
+本庫的 `AffineScheme` 專門、且只誠實地表示零維商
+$A=\mathbb F_7[x]/I$ 的 $\operatorname{Spec}A$。主分解
+$I=Q_1\cap\cdots\cap Q_r$ 給出點 $P_i=\sqrt{Q_i}$；局部 Artin 分解
+$$
+A\;\cong\;\prod_i A_{P_i},\qquad
+\mathcal O_{P_i}\cong \mathbb F_7[x]/Q_i,\qquad
+\kappa(P_i)=\mathbb F_7[x]/P_i,
+$$
+證明 stalk 為何就是主商；點的長度（重數）定義為
+$\ell_i=\dim_{\mathbb F_7}\mathcal O_{P_i}/[\kappa(P_i):\mathbb F_7]$。
+這使概形能區分「同一個支撐點」和不同非約化厚度——
+$\operatorname{Spec}\mathbb F_7[x]/(x^2)$ 只有一點但長度 2，
+而且 $(x^2+1,y)$ 無 $\mathbb F_7$-點卻有一個剩餘域 $\mathbb F_{49}$
+的閉點，兩者都是純簇觀點無法表達的事實。
+
+有限開集在這個零維空間中由其點集決定（拓撲是離散的），
+結構層取
+$$
+\mathcal O(U)=\prod_{P_i\in U}\mathcal O_{P_i},\qquad
+\Gamma(\operatorname{Spec}A,\mathcal O)=A,
+$$
+限制映射是直積投影；全域段定理以 CRT 矩陣同構實際驗證。
+另外實作了 $D(f)$（並以 $|(\!A_f\!)|=\prod_{P_i\in D(f)}|A_{P_i}|$
+對照主局部化維數）、$V(J)$ 與特殊化、支集與「段處處在 stalk 為零
+$\iff$ 冪零」、約化子概形與閉子概形、stalk→剩餘域映射、由多項式
+映射誘導的概形態射及其素理想收縮。正維 $\operatorname{Spec}$ 與一般
+黏合概形仍有非閉泛點，不在本表示範圍內，構造器回 `None`，不冒充。
+
+---
+
+## 14. 定理 → 衍生演算法總表（連帶結果）
 
 | 定理 | 由此得到的決策/構造程序 |
 |---|---|
@@ -392,10 +525,15 @@ $K$ 是 $A\to A_f$ 的核；而 $\bar f$ 在 $A/K$ 中的乘法映射單射
 | 有限環中單射 $m_f\Rightarrow$ 滿射 | 有限代數局部化 $A_f=A/K$；$D(f)$ 維數 |
 | 直積域同態由指標函數決定 | 由同態回復點映射（Spec 方向） |
 | 局部化普遍性質 | 擴張存在性 ⟺ 像為可逆元（可判定） |
+| $S/\operatorname{in}(I)$ 保 Hilbert 函數 + lcm 容斥 | 精確 Hilbert 級數/多項式、次數、算術虧格 |
+| Noether——Lasker 主分解 | 相伴/嵌入素、零維根與素性、有限概形支撐 |
+| 跡型式核 $=\mathfrak N(A)$ + Frobenius 佈爾環 | 零維主分量分裂、冪零根、既約性 |
+| 齊次座標商與圖卡同構 | $\mathbb P^n$ 點法式、仿射錐計數、圖卡代數 |
+| 局部 Artin 分解 $A=\prod A_{P_i}$ | stalks、長度、段與 CRT 全域段定理 |
 
 ---
 
-## 11. 誠實邊界（不聲稱的東西）
+## 15. 誠實邊界（不聲稱的東西）
 
 1. **編譯期計算**：MoonBit（v0.10.15）不是 Zig 式 comptime 語言，
    本庫不聲稱 Gröbner 在編譯期執行。真正放在編譯期的是：
@@ -416,21 +554,29 @@ $K$ 是 $A\to A_f$ 的核；而 $\bar f$ 在 $A/K$ 中的乘法映射單射
    本庫定位為小變量精確計算；步數上限觸發時中止並說明，絕不回傳猜測值。
 5. **局部化涵蓋**：$S=\{f^k\}$ 的一般商（飽和等式）、一點補集、
    有限代數三種已實作。任意乘法集、素理想補集的一般素譜局部化、
-   分式域的一般構造（需要整環檢驗/素性判定，本庫未實作素理想判定）
+   分式域的一般構造（需要一般整環檢驗；本庫只有零維/單項式素性判定）
    不在範圍內——需要時會返回型別不存在，而不是偷偷以叉乘冒充。
-6. **未實作**：Hilbert 多項式、主分解、投射幾何、概形層語義。
-   飽和測試中出現的 $(x)\cap(x,y)^2$ 式分解只是解釋那個例子的評論，
-   不是分解演算法。
+6. **本期四個新層的精確邊界**：Hilbert 理論只涵蓋多項式環除齊次理想
+   的標準分級商（不含一般有限生成分級模）；主分解只在單項式、
+   單變量與零維三個區制完備，正維非單項式回 `None`；
+   投射幾何的點層仍是 $\mathbb F_7$-點；概形只表示零維仿射
+   $\operatorname{Spec}A$（及投射簇的零維圖卡），正維泛點、一般黏合、
+   全 $\operatorname{Proj}$ 概形不符合有限點模型，構造器明確回 `None`。
+   一般素性判定、分式域與函數域的一般構造仍不在範圍內
+   （但零維素性已由主分解層給出精確程序）。
 
 ---
 
-## 12. 參考
+## 16. 參考
 
 - Cox, Little, O'Shea《Ideals, Varieties, and Algorithms》：
   除法、Buchberger、消元、有限維階梯。
 - Atiyah–Macdonald《Introduction to Commutative Algebra》第 2、3 章：
   張量積、局部化普遍性質。
-- Eisenbud《Commutative Algebra》第 15 章：Gröbner 退化與維數。
+- Eisenbud《Commutative Algebra》第 15 章：Gröbner 退化與維數；
+  主分解、Hilbert 函數的有關章節。
+- Hartshorne《Algebraic Geometry》第 I 章（投射簇、Hilbert 多項式）、
+  第 II 章（概形、結構層與 $\Gamma(\operatorname{Spec}A,\mathcal O)=A$）。
 - MoonBit 語言（安裝後本機版本 moon 0.1.20261012、moonc v0.10.15）：
   官方下載頁的 Unix 安裝腳本、方法與 trait 文件
   （含 v0.10 系列 `impl ... with fn`、`extend`、`moon.pkg` DSL 等現行語法；

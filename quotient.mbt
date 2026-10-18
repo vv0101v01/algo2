@@ -71,11 +71,6 @@ pub fn QuotientRing::num_vars(self : QuotientRing) -> Int32 {
 }
 
 ///|
-pub fn QuotientRing::tag_value(self : QuotientRing) -> Int32 {
-  self.tag
-}
-
-///|
 /// The quotient (projection) map pi : F_p[x] -> F_p[x]/I, f |-> f + I,
 /// computed as the normal form. Kernel is exactly I (tested).
 pub fn QuotientRing::of_poly(self : QuotientRing, f : Poly) -> Coset {

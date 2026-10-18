@@ -204,17 +204,9 @@ pub fn RabinowitschIso::new(loc : LocalizedRing) -> RabinowitschIso {
   let n = loc.ring.num_vars()
   let gens : Array[Poly] = []
   for g in loc.ring.ideal().gens() {
-    let mapping : Array[Int32] = []
-    for i in 0..<n {
-      mapping.push(i)
-    }
-    gens.push(g.relabel(mapping, n + 1))
+    gens.push(g.relabel(identity_mapping(n), n + 1))
   }
-  let mapping_f : Array[Int32] = []
-  for i in 0..<n {
-    mapping_f.push(i)
-  }
-  let f_emb = loc.denom.relabel(mapping_f, n + 1)
+  let f_emb = loc.denom.relabel(identity_mapping(n), n + 1)
   let t = Poly::variable(n + 1, n)
   gens.push(t.mul(f_emb).sub(Poly::one_poly(n + 1)))
   { loc, quot: QuotientRing::from_generators(n + 1, gens), }
@@ -229,11 +221,7 @@ pub fn RabinowitschIso::quotient_ring(self : RabinowitschIso) -> QuotientRing {
 /// Forward map: a/f^k |-> a·t^k.
 pub fn RabinowitschIso::forward(self : RabinowitschIso, a : LocElem) -> Coset {
   let n = self.loc.ring.num_vars()
-  let mapping : Array[Int32] = []
-  for i in 0..<n {
-    mapping.push(i)
-  }
-  let num_emb = a.num.relabel(mapping, n + 1)
+  let num_emb = a.num.relabel(identity_mapping(n), n + 1)
   let t = Poly::variable(n + 1, n)
   self.quot.of_poly(num_emb.mul(t.pow(a.power)))
 }

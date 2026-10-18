@@ -243,11 +243,10 @@ pub fn Matrix::inverse(self : Matrix) -> Matrix? {
     aug_rows.push(r)
   }
   let aug = Matrix::from_rows(aug_rows)
-  let (r, pivots) = aug.rref()
+  let (r, _) = aug.rref()
   // Counting pivots is NOT enough: for singular A a pivot can land in the
   // augmented half (e.g. [[1,2],[2,4]] gives pivots [0,2]). Invertible
   // iff the left half of the RREF is exactly the identity.
-  let _ = pivots
   for i in 0..<n {
     for j in 0..<n {
       let expected = if i == j { Fp::one() } else { Fp::zero() }
